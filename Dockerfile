@@ -33,6 +33,16 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf
 
+# The repo's public/ has no .htaccess, so define Laravel's rewrite rules here
+RUN { echo '<Directory /var/www/html/public>'; \
+      echo '    RewriteEngine On'; \
+      echo '    RewriteCond %{REQUEST_FILENAME} !-d'; \
+      echo '    RewriteCond %{REQUEST_FILENAME} !-f'; \
+      echo '    RewriteRule ^ index.php [L]'; \
+      echo '</Directory>'; \
+    } > /etc/apache2/conf-available/laravel-rewrite.conf \
+    && a2enconf laravel-rewrite
+
 WORKDIR /var/www/html
 COPY . .
 # Bring in Mix-compiled assets from stage 1
