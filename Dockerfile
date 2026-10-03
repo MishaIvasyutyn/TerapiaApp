@@ -3,6 +3,8 @@ FROM node:14 AS frontend
 WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm install
+# Laravel Mix 5 tries to auto-install this during the build (and fails); pre-install it
+RUN npm install --no-save vue-template-compiler
 COPY . .
 RUN npm run prod
 
