@@ -17,7 +17,7 @@ RUN echo "deb http://archive.debian.org/debian bullseye main contrib non-free" >
 RUN apt-get update && apt-get install -y \
         git curl unzip \
         libpng-dev libjpeg-dev libfreetype6-dev \
-        libzip-dev \
+        libzip-dev libonig-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         pdo pdo_mysql mbstring zip exif pcntl bcmath gd \
