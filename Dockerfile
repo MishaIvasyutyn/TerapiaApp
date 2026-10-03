@@ -9,6 +9,10 @@ RUN npm run prod
 # ---------- Stage 2: PHP 7.4 + Apache (Laravel 7 needs PHP 7.x) ----------
 FROM php:7.4-apache
 
+# Debian Buster (base of php:7.4) is EOL; its packages live on the archive now
+RUN echo "deb http://archive.debian.org/debian buster main contrib non-free" > /etc/apt/sources.list \
+    && echo "deb http://archive.debian.org/debian-security buster/updates main contrib non-free" >> /etc/apt/sources.list
+
 # System deps + PHP extensions required by Laravel
 RUN apt-get update && apt-get install -y \
         git curl unzip \
@@ -33,7 +37,7 @@ COPY . .
 COPY --from=frontend /app/public/ ./public/
 
 RUN composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction \
-    && php artisan storage:link || true \
+    && (php artisan storage:link || true) \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
